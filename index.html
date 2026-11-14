@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>&#x1F3AC; &#x0986;&#x09AE;&#x09BE;&#x09B0; &#x09B0;&#x09BF;&#x09B2; &#x0995;&#x09BE;&#x09B2;&#x09C7;&#x0995;&#x09B6;&#x09A8; &#x2014; &#x09E8;&#x09E9;&#x09E8;</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Noto Sans Bengali', 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg,#0f0f14,#1a1a2e);
+    color:#fff; min-height:100vh; padding:24px 16px;
+  }
+  header { text-align:center; margin-bottom:24px; }
+  header h1 {
+    font-size:1.6rem;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  header p { color:#888; font-size:.85rem; margin-top:6px; }
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));
+    gap:20px; max-width:1400px; margin:0 auto;
+  }
+  .card {
+    background:#16161e; border-radius:16px; overflow:hidden;
+    box-shadow:0 6px 24px rgba(0,0,0,.5);
+    border:1px solid #22222e;
+    transition: transform .2s, box-shadow .2s;
+    display:flex; flex-direction:column;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow:0 10px 32px rgba(79,172,254,.25);
+  }
+  .card-title {
+    padding:12px 16px;
+    background: linear-gradient(135deg,#1e1e2e,#252538);
+    border-bottom:1px solid #2a2a3e;
+    position:relative;
+  }
+  .card-title::before {
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+  }
+  .card-badge {
+    display:inline-block;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    color:#001428; font-size:.7rem; font-weight:700;
+    padding:2px 8px; border-radius:6px; margin-bottom:8px;
+  }
+  .card-date { font-size:.9rem; color:#f0f0ff; font-weight:600; margin-bottom:4px; }
+  .card-day { color:#4facfe; font-size:.78rem; font-weight:600; margin-bottom:4px; }
+  .card-time { font-size:.8rem; color:#9ba0c0; font-variant-numeric: tabular-nums; }
+  .card-body { flex:1; position:relative; min-height:380px; background:#0a0a10; }
+  .loading {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; height:380px; gap:12px; color:#666;
+  }
+  .spinner {
+    width:36px; height:36px; border:3px solid #333;
+    border-top-color:#4facfe; border-radius:50%;
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .fb-video, .fb-video iframe { width:100% !important; }
+  .fallback {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; height:380px; gap:16px;
+    padding:24px; text-align:center;
+    background: radial-gradient(circle at 50% 30%, #1e2a44, #0a0a10);
+  }
+  .fallback .icon { font-size:3.5rem; opacity:.7; }
+  .fallback p { color:#aab; font-size:.9rem; max-width:240px; }
+  .fallback a {
+    display:inline-flex; align-items:center; gap:8px;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    color:#001428; text-decoration:none;
+    padding:12px 24px; border-radius:10px;
+    font-weight:700; font-size:.9rem;
+  }
+  #loadMore {
+    display:block; margin:32px auto;
+    padding:14px 40px;
+    background: linear-gradient(90deg,#4facfe,#00f2fe);
+    color:#001428; border:none; border-radius:12px;
+    font-size:1rem; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 20px rgba(79,172,254,.4);
+  }
+  footer { text-align:center; color:#444; font-size:.75rem; margin-top:40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F3AC; &#x0986;&#x09AE;&#x09BE;&#x09B0; &#x09B0;&#x09BF;&#x09B2; &#x0995;&#x09BE;&#x09B2;&#x09C7;&#x0995;&#x09B6;&#x09A8;</h1>
+  <p id="status">&#x0987;&#x09A8;&#x09BF;&#x09B6;&#x09BF;&#x09DF;&#x09BE;&#x09B2;&#x09BE;&#x0987;&#x099C; &#x09B9;&#x099A;&#x09CD;&#x099B;&#x09C7;&#x2026;</p>
+</header>
+
+<div id="grid" class="grid"></div>
+<button id="loadMore" style="display:none">&#x0986;&#x09B0;&#x0993; &#x09B2;&#x09CB;&#x09A1; &#x0995;&#x09B0;&#x09C1;&#x09A8; &#x2B07;</button>
+<footer>&#x00A9; 2026 &#x2014; Powered by Facebook Embed</footer>
+
+<div id="fb-root"></div>
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({ xfbml: false, version: 'v19.0' });
+    window.FB_READY = true;
+    console.log("\u2705 FB SDK ready");
+    document.getElementById('status').textContent =
+      "SDK \u09B0\u09C7\u09A1\u09BF, \u09AD\u09BF\u09A1\u09BF\u0993 \u09B2\u09CB\u09A1 \u09B9\u099A\u09CD\u099B\u09C7\u2026";
+    processPendingCards();
+  };
+  setTimeout(function() {
+    if (!window.FB_READY) {
+      console.error("\u274C FB SDK not loaded");
+      document.getElementById('status').textContent =
+        "\u26A0\uFE0F Facebook SDK \u09B2\u09CB\u09A1 \u09B9\u09CD\u09AF\u09A8\u09BF";
+    }
+  }, 10000);
+</script>
+<script async defer crossorigin="anonymous"
+  src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+<script src="links.js"></script>
+
+<script>
+var BN_M = {
+  Jan:"\u099C\u09BE\u09A8\u09C1\u09DF\u09BE\u09B0\u09BF",
+  Feb:"\u09AB\u09C7\u09AC\u09CD\u09B0\u09C1\u09DF\u09BE\u09B0\u09BF",
+  Mar:"\u09AE\u09BE\u09B0\u09CD\u099A",
+  Apr:"\u098F\u09AA\u09CD\u09B0\u09BF\u09B2",
+  May:"\u09AE\u09C7",
+  Jun:"\u099C\u09C1\u09A8",
+  Jul:"\u099C\u09C1\u09B2\u09BE\u0987",
+  Aug:"\u0986\u0997\u09B8\u09CD\u099F",
+  Sep:"\u09B8\u09C7\u09AA\u09CD\u099F\u09C7\u09AE\u09CD\u09AC\u09B0",
+  Oct:"\u0985\u0995\u09CD\u099F\u09CB\u09AC\u09B0",
+  Nov:"\u09A8\u09AD\u09C7\u09AE\u09CD\u09AC\u09B0",
+  Dec:"\u09A1\u09BF\u09B8\u09C7\u09AE\u09CD\u09AC\u09B0"
+};
+var BN_D = [
+  "\u09B0\u09AC\u09BF\u09AC\u09BE\u09B0",
+  "\u09B8\u09CB\u09AE\u09AC\u09BE\u09B0",
+  "\u09AE\u0999\u09CD\u0997\u09B2\u09AC\u09BE\u09B0",
+  "\u09AC\u09C1\u09A7\u09AC\u09BE\u09B0",
+  "\u09AC\u09C3\u09B9\u09B8\u09CD\u09AA\u09A4\u09BF\u09AC\u09BE\u09B0",
+  "\u09B6\u09C1\u0995\u09CD\u09B0\u09AC\u09BE\u09B0",
+  "\u09B6\u09A8\u09BF\u09AC\u09BE\u09B0"
+];
+var BN_DIGITS = "\u09E6\u09E7\u09E8\u09E9\u09EA\u09EB\u09EC\u09ED\u09EE\u09EF";
+
+function toBn(n) {
+  return String(n).replace(/\d/g, function(d){ return BN_DIGITS[d]; });
+}
+
+function parseDate(s) {
+  var m = s.match(/([A-Za-z]+)\s+(\d+),\s+(\d+)/);
+  if (!m) return {dayBn:"",monthBn:s,yearBn:"",dayOfWeek:""};
+  var mo=m[1], dy=m[2], yr=m[3];
+  var d = new Date(mo+" "+dy+", "+yr+" 12:00:00");
+  return {
+    monthBn: BN_M[mo]||mo,
+    dayBn: toBn(dy),
+    yearBn: toBn(yr),
+    dayOfWeek: BN_D[d.getDay()]||""
+  };
+}
+
+function parseTime(s) {
+  var m = s.match(/(\d+):(\d+):(\d+)\s*(am|pm)/i);
+  if (!m) return s;
+  var suffix = m[4].toLowerCase()==="am"
+    ? "\u09AA\u09C2\u09B0\u09CD\u09AC\u09BE\u09B9\u09CD\u09A3"
+    : "\u0985\u09AA\u09B0\u09BE\u09B9\u09CD\u09A3";
+  return toBn(m[1])+":"+toBn(m[2])+":"+toBn(m[3])+" "+suffix;
+}
+
+var PAGE_SIZE = 24;
+var rendered = 0;
+var grid = document.getElementById('grid');
+var loadMoreBtn = document.getElementById('loadMore');
+
+function renderNextPage() {
+  var end = Math.min(rendered + PAGE_SIZE, reels.length);
+  for (var i = rendered; i < end; i++) createCard(reels[i], i);
+  rendered = end;
+
+  document.getElementById('status').textContent =
+    toBn(rendered)+" / "+toBn(reels.length)+"\u099F\u09BF \u09B0\u09BF\u09B2 \u09A6\u09C7\u0996\u09BE\u09A8\u09CB \u09B9\u099A\u09CD\u099B\u09C7";
+
+  if (rendered < reels.length) {
+    loadMoreBtn.style.display = 'block';
+    loadMoreBtn.textContent =
+      "\u0986\u09B0\u0993 "+toBn(Math.min(PAGE_SIZE, reels.length-rendered))+
+      "\u099F\u09BF \u09B2\u09CB\u09A1 \u0995\u09B0\u09C1\u09A8 \u2B07";
+  } else {
+    loadMoreBtn.style.display = 'none';
+  }
+}
+
+loadMoreBtn.addEventListener('click', function() {
+  renderNextPage();
+  document.querySelectorAll('.card:not([data-observed])').forEach(observeCard);
+});
+
+function createCard(reel, i) {
+  var d = parseDate(reel.d);
+  var t = parseTime(reel.t);
+  var card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.href = reel.u;
+  card.dataset.index = i;
+
+  card.innerHTML =
+    '<div class="card-title">' +
+      '<span class="card-badge">\u09B0\u09BF\u09B2 #'+toBn(i+1)+'</span>' +
+      '<div class="card-date">\uD83D\uDCC5 '+d.dayBn+' '+d.monthBn+' '+d.yearBn+'</div>' +
+      '<div class="card-day">\uD83D\uDDD3\uFE0F '+d.dayOfWeek+'</div>' +
+      '<div class="card-time">\uD83D\uDD50 '+t+'</div>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="loading">' +
+        '<div class="spinner"></div>' +
+        '<span>\u09B2\u09CB\u09A1 \u09B9\u099A\u09CD\u099B\u09C7\u2026</span>' +
+      '</div>' +
+    '</div>';
+  grid.appendChild(card);
+}
+
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      loadCard(entry.target);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { rootMargin: "200px 0px" });
+
+function observeCard(card) {
+  card.dataset.observed = "1";
+  observer.observe(card);
+}
+
+function loadCard(card) {
+  if (card.dataset.loaded === "1") return;
+  if (!window.FB_READY) { card.dataset.pending = "1"; return; }
+  attemptEmbed(card);
+}
+
+function attemptEmbed(card) {
+  if (card.dataset.loaded === "1") return;
+  card.dataset.loaded = "1";
+  delete card.dataset.pending;
+
+  var body = card.querySelector('.card-body');
+  var url = card.dataset.href;
+
+  var wrapper = document.createElement('div');
+  wrapper.className = 'fb-video';
+  wrapper.setAttribute('data-href', url);
+  wrapper.setAttribute('data-width', 'auto');
+  wrapper.setAttribute('data-allowfullscreen', 'true');
+  wrapper.setAttribute('data-show-captions', 'false');
+  wrapper.setAttribute('data-lazy', 'true');
+
+  body.innerHTML = '';
+  body.appendChild(wrapper);
+
+  try {
+    FB.XFBML.parse(body);
+  } catch (e) {
+    console.warn("XFBML parse error:", url, e);
+    showFallback(card, url);
+    return;
+  }
+
+  setTimeout(function() {
+    if (body.querySelector('iframe')) {
+      console.log("\u2705 Video loaded:", url);
+    } else {
+      console.warn("\u274C Embed failed:", url);
+      showFallback(card, url);
+    }
+  }, 4000);
+}
+
+function showFallback(card, url) {
+  var body = card.querySelector('.card-body');
+  if (body.querySelector('.fallback')) return;
+
+  body.innerHTML =
+    '<div class="fallback">' +
+      '<div class="icon">\uD83C\uDF9E\uFE0F</div>' +
+      '<p>\u098F\u0987 \u09B0\u09BF\u09B2\u099F\u09BF \u098F\u0996\u09BE\u09A8\u09C7 ' +
+        '\u098F\u09AE\u09AC\u09C7\u09A1 \u0995\u09B0\u09BE \u09AF\u09BE\u099A\u09CD\u099B\u09C7 ' +
+        '\u09A8\u09BE\u0964<br>Facebook-\u098F \u09B8\u09B0\u09BE\u09B8\u09B0\u09BF ' +
+        '\u09A6\u09C7\u0996\u09C1\u09A8\u0964</p>' +
+      '<a href="'+url+'" target="_blank" rel="noopener">' +
+        '\u25B6 Facebook-\u098F \u09A6\u09C7\u0996\u09C1\u09A8' +
+      '</a>' +
+    '</div>';
+}
+
+function processPendingCards() {
+  document.querySelectorAll('.card[data-pending="1"]').forEach(attemptEmbed);
+}
+
+renderNextPage();
+document.querySelectorAll('.card').forEach(observeCard);
+</script>
+
+</body>
+</html>
